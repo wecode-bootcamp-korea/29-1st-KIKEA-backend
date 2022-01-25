@@ -7,13 +7,6 @@ class TimeStampModel(models.Model):
     class Meta:
         abstract = True
 
-class Cart(TimeStampModel):
-    user          = models.ForeignKey('User', on_delete=models.CASCADE)
-    productoption = models.ForeignKey('ProductOption', on_delete=models.CASCADE)
-    quantity      = models.PositiveIntegerField()
-    class Meta:
-        db_table = 'carts'
-
 class ProductOption(TimeStampModel):
     price   = models.PositiveBigIntegerField()
     stock   = models.TextField()
