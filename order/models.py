@@ -33,7 +33,7 @@ class ShippingStatus(models.Model):
         db_table = 'shipping_status'
 
 class Cart(TimeStampModel):
-    user           = models.ForeignKey('User', on_delete=models.CASCADE)
+    user           = models.ForeignKey('users.User', on_delete=models.CASCADE)
     product_option = models.ForeignKey('products.ProductOption', on_delete=models.CASCADE)
     quantity       = models.PositiveIntegerField()
 
