@@ -7,15 +7,6 @@ class TimeStampModel(models.Model):
     class Meta:
         abstract = True
 
-class User(TimeStampModel):
-    name         = models.CharField(max_length=45)
-    email        = models.EmailField(max_length=100, unique=True)
-    password     = models.CharField(max_length=200)
-    phone_number = models.CharField(max_length=100)
-    point        = models.PositiveIntegerField()
-    class Meta:
-        db_table = 'users'
-
 class Cart(TimeStampModel):
     user          = models.ForeignKey('User', on_delete=models.CASCADE)
     productoption = models.ForeignKey('ProductOption', on_delete=models.CASCADE)
@@ -51,7 +42,7 @@ class Category(TimeStampModel):
     class Meta:
         db_table = 'categories'
 
-class SubCategory(models.Model):
+class SubCategory(TimeStampModel):
     name     = models.CharField(max_length=45)
     category = models.ForeignKey('Category', on_delete=models.CASCADE)
     class Meta:
