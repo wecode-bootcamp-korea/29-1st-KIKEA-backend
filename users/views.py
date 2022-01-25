@@ -10,11 +10,11 @@ from my_settings            import SECRET_KEY, ALGORITHM
 class SignUpView(View):
     def post(self, request):
         try:
-            user_data       = json.loads(request.body)
-            name            = user_data["name"]
-            email           = user_data['email']
-            password        = user_data['password']
-            phone_number    = user_data["phone_number"]
+            data       = json.loads(request.body)
+            name            = data["name"]
+            email           = data['email']
+            password        = data['password']
+            phone_number    = data["phone_number"]
             hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
             
             REGEX_EMAIL     = r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+'
@@ -46,3 +46,4 @@ class SignUpView(View):
         
         except json.decoder.JSONDecodeError:
             return JsonResponse({"message" : "JSONDecodeError"}, status = 401)
+
