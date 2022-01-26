@@ -1,11 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
-
-class TimeStampModel(models.Model):
-    created_at = models.DateTimeField(auto_now_add = True)
-    updated_at = models.DateTimeField(auto_now = True)
-    class Meta:
-        abstract = True
+from users.models import TimeStampModel
 
 class ProductOption(TimeStampModel):
     price   = models.PositiveBigIntegerField()
@@ -35,7 +30,7 @@ class Category(TimeStampModel):
     class Meta:
         db_table = 'categories'
 
-class SubCategory(TimeStampModel):
+class SubCategory(models.Model):
     name     = models.CharField(max_length=45)
     category = models.ForeignKey('Category', on_delete=models.CASCADE)
     class Meta:
@@ -45,7 +40,7 @@ class Review(TimeStampModel):
     comment = models.TextField(max_length=500)
     rating  = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)])
     product = models.ForeignKey('Product', on_delete=models.CASCADE)
-    user    = models.ForeignKey('User', on_delete=models.CASCADE)
+    user    = models.ForeignKey('users.User', on_delete=models.CASCADE)
     class Meta:
         db_table = 'reviews'
 
