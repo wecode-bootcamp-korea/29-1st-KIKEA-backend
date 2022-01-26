@@ -1,5 +1,5 @@
 from django.db              import models
-from cores.models           import TimeStampModel
+from core.models           import TimeStampModel
 
 class ProductOption(TimeStampModel):
     price   = models.PositiveBigIntegerField(max_length=10000000)
@@ -50,7 +50,7 @@ class SubCategory(models.Model):
 
 class Review(TimeStampModel):
     comment = models.TextField(max_length=500)
-    rating  = models.DecimalField(max_digits=5, decimal_places=1)
+    rating  = models.DecimalField(max_digits=2, decimal_places=1)
     product = models.ForeignKey('Product', on_delete=models.CASCADE)
     user    = models.ForeignKey('users.User', on_delete=models.CASCADE)
 
