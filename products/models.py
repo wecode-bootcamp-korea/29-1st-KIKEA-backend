@@ -12,11 +12,18 @@ class ProductOption(TimeStampModel):
     class Meta:
         db_table = 'product_options'
 
+class Type(TimeStampModel):
+    name        = models.CharField(max_length=45)
+    subcategory = models.ForeignKey('SubCategory', on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'types'
+
 class Product(TimeStampModel):
     name          = models.CharField(max_length=45)
     description   = models.TextField()
     default_image = models.URLField()
-    subcategory   = models.ForeignKey('SubCategory', on_delete=models.CASCADE)
+    type          = models.ForeignKey('Type', on_delete=models.CASCADE)
     
     class Meta:
         db_table = 'products'
