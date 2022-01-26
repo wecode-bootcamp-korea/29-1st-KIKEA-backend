@@ -11,7 +11,7 @@ class Order(TimeStampModel):
         db_table = 'orders'
 
 class OderItem(models.Model):
-    user             = models.ForeignKey('user.User', on_delete=models.CASCADE)
+    user             = models.ForeignKey('users.User', on_delete=models.CASCADE)
     product_option   = models.ForeignKey('products.ProductOption', on_delete=models.CASCADE)
     order            = models.ForeignKey('Order', on_delete=models.CASCADE)
     shippting_status = models.ForeignKey('ShippingStatus', on_delete=models.CASCADE)
