@@ -1,6 +1,6 @@
 from django.db import models
 
-from cores.models import TimeStampModel
+from core.models import TimeStampModel
 
 class Order(TimeStampModel):
     order_number = models.CharField(max_length=100, unique=True)
