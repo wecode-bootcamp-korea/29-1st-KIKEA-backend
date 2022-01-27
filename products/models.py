@@ -1,5 +1,5 @@
-from django.db              import models
-from core.models           import TimeStampModel
+from django.db   import models
+from core.models import TimeStampModel
 
 class ProductOption(TimeStampModel):
     price   = models.PositiveBigIntegerField(max_length=10000000)
