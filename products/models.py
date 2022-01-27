@@ -2,8 +2,8 @@ from django.db   import models
 from core.models import TimeStampModel
 
 class ProductOption(TimeStampModel):
-    price   = models.PositiveBigIntegerField(max_length=10000000)
-    stock   = models.IntegerField(max_length=1000)
+    price   = models.PositiveBigIntegerField()
+    stock   = models.IntegerField()
     color   = models.ForeignKey('Color', on_delete=models.CASCADE, null=True)
     size    = models.ForeignKey('Size', on_delete=models.CASCADE, null=True)
     product = models.ForeignKey('Product', on_delete=models.CASCADE)
