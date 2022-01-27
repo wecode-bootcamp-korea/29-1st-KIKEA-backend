@@ -4,17 +4,17 @@ from core.models           import TimeStampModel
 class ProductOption(TimeStampModel):
     price   = models.PositiveBigIntegerField(max_length=10000000)
     stock   = models.IntegerField(max_length=1000)
-    color   = models.ForeignKey('Color', on_delete=models.CASCADE)
-    size    = models.ForeignKey('Size', on_delete=models.CASCADE)
+    color   = models.ForeignKey('Color', on_delete=models.CASCADE, null=True)
+    size    = models.ForeignKey('Size', on_delete=models.CASCADE, null=True)
     product = models.ForeignKey('Product', on_delete=models.CASCADE)
     
     class Meta:
         db_table = 'product_options'
 
 class Type(models.Model):
-    name        = models.CharField(max_length=45)
-    image_url   = models.URLField(max_length=500)
-    subcategory = models.ForeignKey('SubCategory', on_delete=models.CASCADE)
+    name         = models.CharField(max_length=45)
+    image_url    = models.URLField(max_length=1000)
+    sub_category = models.ForeignKey('SubCategory', on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'types'
@@ -22,18 +22,25 @@ class Type(models.Model):
 class Product(TimeStampModel):
     name          = models.CharField(max_length=45)
     description   = models.TextField(max_length=500)
-    default_image = models.URLField(max_length=500)
+    default_image = models.URLField(max_length=1000)
     type          = models.ForeignKey('Type', on_delete=models.CASCADE)
     
     class Meta:
         db_table = 'products'
 
 class ProductOptionImage(models.Model):
-    image_url     = models.URLField(max_length=500)
-    productoption = models.ForeignKey('ProductOption', on_delete=models.CASCADE)
+    image_url      = models.URLField(max_length=1000)
+    product_option = models.ForeignKey('ProductOption', on_delete=models.CASCADE)
     
     class Meta:
         db_table = 'images'
+
+class TypeImage(models.Model):
+    image_url = models.URLField(max_length=1000)
+    type      = models.ForeignKey('Type', on_delete=models.CASCADE) 
+
+    class Meta:
+        db_table = 'type_images'
 
 class Category(models.Model):
     name = models.CharField(max_length=45)
