@@ -5,12 +5,12 @@ from core.models import TimeStampModel
 class Order(TimeStampModel):
     order_number = models.CharField(max_length=100, unique=True)
     user         = models.ForeignKey('users.User', on_delete=models.CASCADE)
-    order_status = models.ForeignKey('OderStatus', on_delete=models.CASCADE)
+    order_status = models.ForeignKey('OrderStatus', on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'orders'
 
-class OderItem(models.Model):
+class OrderItem(models.Model):
     user             = models.ForeignKey('users.User', on_delete=models.CASCADE)
     product_option   = models.ForeignKey('products.ProductOption', on_delete=models.CASCADE)
     order            = models.ForeignKey('Order', on_delete=models.CASCADE)
@@ -20,7 +20,7 @@ class OderItem(models.Model):
     class Meta:
         db_table = 'order_items'
 
-class OderStatus(models.Model):
+class OrderStatus(models.Model):
     name = models.CharField(max_length=45)
 
     class Meta:
