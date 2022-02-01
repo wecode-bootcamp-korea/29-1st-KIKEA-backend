@@ -6,13 +6,13 @@ from django.views import View
 from .models import Cart
 
 class CartView(View):
-    def put(self, request):
+    def patch(self, request, product_option_id):
         data = json.loads(request.body)
 
         user_id  = request.user.id
         quantity = data['quantity']
 
-        cart = Cart.objects.filter(user=user_id, product_option=data['product_option_id'])
+        cart = Cart.objects.filter(user=user_id, product_option=product_option_id)
 
         if quantity == '0':
             cart.delete()
