@@ -21,13 +21,13 @@ class OderItem(models.Model):
         db_table = 'order_items'
 
 class OderStatus(models.Model):
-    status = models.CharField(max_length=45)
+    name = models.CharField(max_length=45)
 
     class Meta:
         db_table = 'order_status'
 
 class ShippingStatus(models.Model):
-    status = models.CharField(max_length=45)
+    name = models.CharField(max_length=45)
 
     class Meta:
         db_table = 'shipping_status'
