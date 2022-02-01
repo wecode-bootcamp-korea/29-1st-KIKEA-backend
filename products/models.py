@@ -33,7 +33,7 @@ class ProductOptionImage(models.Model):
     product_option = models.ForeignKey('ProductOption', on_delete=models.CASCADE)
     
     class Meta:
-        db_table = 'images'
+        db_table = 'product_option_images'
 
 class TypeImage(models.Model):
     image_url = models.URLField(max_length=1000)
