@@ -23,7 +23,7 @@ class OrderView(View):
                 for cart in carts:
                     product_option = ProductOption.objects.get(id=cart.product_option.id)
 
-                    if product_option.stock - cart.quantity <= 0:
+                    if product_option.stock - cart.quantity < 0:
                         raise OutOfStock
                     
                     total_payment        += (cart.quantity * product_option.price)
@@ -48,12 +48,13 @@ class OrderView(View):
                 
                 order_items = []
 
-                for option in product_options:
+                for product_option, cart in zip(product_options, carts):
                     order_items.append(OrderItem(
                             user             = user,
-                            product_option   = option,
+                            product_option   = product_option,
                             order            = order,
-                            shippting_status = ShippingStatus.objects.get(id=1)
+                            shippting_status = ShippingStatus.objects.get(id=1),
+                            quantity         = cart.quantity
                         ))
 
                 user.point -= total_payment
