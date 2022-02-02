@@ -27,16 +27,16 @@ class OrderView(View):
             tracking_number = 'NULL'
 
             if order_item.product_option.color != None:
-                color = order_item.product_option.color
+                color = order_item.product_option.color.name
             if order_item.product_option.size != None:
-                size = order_item.product_option.size
+                size = order_item.product_option.size.name
             if order_item.tracking_number != None:
                 tracking_number = order_item.tracking_number
             
             result.append(
                 {   
                     'order_number'   : order_item.order.order_number,
-                    'order_status'   : order_item.order.order_number,
+                    'order_status'   : order_item.order.order_status.name,
                     'product_name'   : order_item.product_option.product.name,
                     'color'          : color,
                     'size'           : size,

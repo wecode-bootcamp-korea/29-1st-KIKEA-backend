@@ -14,7 +14,7 @@ class OrderItem(models.Model):
     user             = models.ForeignKey('users.User', on_delete=models.CASCADE)
     product_option   = models.ForeignKey('products.ProductOption', on_delete=models.CASCADE)
     order            = models.ForeignKey('Order', on_delete=models.CASCADE)
-    shippting_status = models.ForeignKey('ShippingStatus', on_delete=models.CASCADE)
+    shipping_status  = models.ForeignKey('ShippingStatus', on_delete=models.CASCADE)
     tracking_number  = models.CharField(max_length=45, null=True, unique=True)
     quantity         = models.IntegerField(null=True)
     
