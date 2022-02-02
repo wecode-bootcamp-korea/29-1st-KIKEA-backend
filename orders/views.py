@@ -4,7 +4,13 @@ from django.http  import HttpResponse, JsonResponse
 from django.views import View
 from django.db    import transaction
 
-from .models         import Cart, Order, OrderStatus, OrderItem, ShippingStatus
+from .models import (
+    Cart,
+    Order,
+    OrderStatus,
+    OrderItem,
+    ShippingStatus
+    )
 from products.models import ProductOption
 from users.models    import User
 
