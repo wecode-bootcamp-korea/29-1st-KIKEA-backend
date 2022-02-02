@@ -9,6 +9,48 @@ from products.models import ProductOption
 from users.models    import User
 
 class OrderView(View):
+    def get(self, request):
+        # user_id       = request.user.id
+        data = json.loads(request.body)
+        user_id = data['user_id']
+
+        order_items = OrderItem.objects.filter(user=user_id)
+
+        if not order_items.exists():
+            return JsonResponse({'message': 'NO_ORDER'}, status=200)
+
+        result = []
+
+        for order_item in order_items:
+            color           = 'NULL'
+            size            = 'NULL'
+            tracking_number = 'NULL'
+
+            if order_item.product_option.color != None:
+                color = order_item.product_option.color
+            if order_item.product_option.size != None:
+                size = order_item.product_option.size
+            if order_item.tracking_number != None:
+                tracking_number = order_item.tracking_number
+            
+            result.append(
+                {   
+                    'order_number'   : order_item.order.order_number,
+                    'order_status'   : order_item.order.order_number,
+                    'product_name'   : order_item.product_option.product.name,
+                    'color'          : color,
+                    'size'           : size,
+                    'quantity'       : order_item.quantity,
+                    'tracking_number': tracking_number,
+                    'shipping_status': order_item.shipping_status.name,
+                    'total_price'    : order_item.quantity * order_item.product_option.price,
+                    'default_image'  : order_item.product_option.product.default_image,
+                    'created_at'     : order_item.order.created_at
+                }
+            )
+
+        return JsonResponse({'result': result}, status=200)
+
     def post(self, request):
         # user_id       = request.user.id
         data = json.loads(request.body)
