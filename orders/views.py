@@ -3,6 +3,7 @@ import random, string, json
 from django.http  import HttpResponse, JsonResponse
 from django.views import View
 from django.db    import transaction
+# from djanog.u
 
 from .models import (
     Cart,
@@ -15,6 +16,10 @@ from products.models import ProductOption
 from users.models    import User
 
 class OrderView(View):
+    # def patch(self, request, order_id):
+    #     order = Order.objects.filter(id=order_id)
+    #     order.created_at
+
     def get(self, request):
         # user_id       = request.user.id
         data = json.loads(request.body)
