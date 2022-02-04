@@ -114,11 +114,7 @@ class OrderView(View):
 
                 if user.point - total_payment < 0:
                     # raise LackOfPoint
-                    return JsonResponse(
-                        {
-                            'message': 'LACK_OF_POINT'
-                        }, status=202
-                    )
+                    return JsonResponse({'message': 'LACK_OF_POINT'}, status=202)
                 
                 order_number = "".join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
 
