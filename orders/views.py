@@ -3,7 +3,7 @@ import random, string, json
 from django.http  import HttpResponse, JsonResponse
 from django.views import View
 from django.db    import transaction
-# from djanog.u
+from django.utils import timezone
 
 from .models import (
     Cart,
@@ -16,9 +16,32 @@ from products.models import ProductOption
 from users.models    import User
 
 class OrderView(View):
-    # def patch(self, request, order_id):
-    #     order = Order.objects.filter(id=order_id)
-    #     order.created_at
+    def patch(self, request):
+        # user_id = request.user.id
+        order_id = 9
+        user_id = 1
+        order = Order.objects.filter(user=user_id, id=order_id)
+        
+        if (timezone.now() - order[0].created_at).days > 7:
+            return JsonResponse({'message': 'NOT_AVAILABLE'}, status=400)
+        
+        with transaction.atomic():
+            order_items = order[0].orderitem_set.filter(order=order[0], user=user_id)
+
+            total_payment = 0
+
+            for order_item in order_items:
+                total_payment                   += (order_item.quantity * order_item.product_option.price)
+                order_item.product_option.stock += order_item.quantity
+                order_item.product_option.save()
+
+            order_items.update(shipping_status_id=5)
+            order.update(order_status_id=3)
+            user        = User.objects.get(id=user_id)
+            user.point += total_payment
+            user.save()
+        
+        return HttpResponse(status=200)  
 
     def get(self, request):
         # user_id       = request.user.id
@@ -64,8 +87,8 @@ class OrderView(View):
 
     def post(self, request):
         # user_id       = request.user.id
-        data = json.loads(request.body)
-        user_id = data['user_id']
+        # data = json.loads(request.body)
+        user_id = 1
         carts         = Cart.objects.filter(user=user_id)
         total_payment = 0
 
@@ -77,7 +100,11 @@ class OrderView(View):
                     product_option = ProductOption.objects.get(id=cart.product_option.id)
 
                     if product_option.stock - cart.quantity < 0:
-                        raise OutOfStock
+                        return JsonResponse(
+                            {
+                                'message'       : 'OUT_OF_STOCK',
+                                'product_option': product_option.product.name
+                            }, status=202)
                     
                     total_payment        += (cart.quantity * product_option.price)
                     product_option.stock -= cart.quantity
@@ -86,7 +113,12 @@ class OrderView(View):
                 user = User.objects.get(id=user_id)
 
                 if user.point - total_payment < 0:
-                    raise LackOfPoint
+                    # raise LackOfPoint
+                    return JsonResponse(
+                        {
+                            'message': 'LACK_OF_POINT'
+                        }, status=202
+                    )
                 
                 order_number = "".join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
 
@@ -99,36 +131,31 @@ class OrderView(View):
                     order_status = OrderStatus.objects.get(id=2)
                 )
                 
-                order_items = []
+                # order_items = []
 
                 for product_option, cart in zip(product_options, carts):
-                    order_items.append(OrderItem(
+                    OrderItem.objects.create(
                             user             = user,
                             product_option   = product_option,
                             order            = order,
-                            shippting_status = ShippingStatus.objects.get(id=1),
+                            shipping_status  = ShippingStatus.objects.get(id=1),
                             quantity         = cart.quantity
-                        ))
+                        )
 
                 user.point -= total_payment
                 user.save()
 
                 for product_option in product_options:
                     product_option.save()
-                for order_item in order_items:
-                    order_item.save()
+                # for order_item in order_items:
+                #     order_item.save()
 
                 # carts.delete()
                 return HttpResponse(status=201)
-        except OutOfStock:
-            return JsonResponse(
-                        {
-                            'message': 'OUT_OF_STOCK'
-                            # 'product_option_id': product_option.id
-                            },
-                            status=202)
-        except LackOfPoint as e:
-            return JsonResponse({'message': 'LACK_OF_POINTS'}, status=202)
+        except KeyError:
+            print('hehe')
+        # except LackOfPoint as e:
+        #     return JsonResponse({'message': str(e)}, status=202)
             
 class OutOfStock(Exception):
     def __init__(self):
