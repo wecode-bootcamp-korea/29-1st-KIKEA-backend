@@ -1,7 +1,9 @@
-from django.http  import JsonResponse
+import json
+
+from django.http  import JsonResponse, HttpResponse
 from django.views import View
 
-from .models     import Order, OrderItem
+from .models     import Order, OrderItem, Cart
 from users.utils import login_decorator
 
 class OrderView(View):
@@ -34,3 +36,20 @@ class OrderView(View):
         ]
 
         return JsonResponse({'result': result}, status=200)
+
+class CartView(View):
+    def patch(self, request, product_option_id):
+        data = json.loads(request.body)
+
+        user_id  = request.user.id
+        quantity = data['quantity']
+
+        cart = Cart.objects.filter(user=user_id, product_option=product_option_id)
+
+        if quantity == '0':
+            cart.delete()
+            return HttpResponse(status=204)
+
+        cart.update(quantity=quantity)
+
+        return HttpResponse(status=200)
