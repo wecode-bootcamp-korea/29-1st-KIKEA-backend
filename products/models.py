@@ -35,13 +35,6 @@ class ProductOptionImage(models.Model):
     class Meta:
         db_table = 'product_option_images'
 
-class TypeImage(models.Model):
-    image_url = models.URLField(max_length=1000)
-    type      = models.ForeignKey('Type', on_delete=models.CASCADE) 
-
-    class Meta:
-        db_table = 'type_images'
-
 class Category(models.Model):
     name = models.CharField(max_length=45)
 
