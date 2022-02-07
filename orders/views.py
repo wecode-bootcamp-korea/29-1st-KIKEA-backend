@@ -1,21 +1,24 @@
+import json
+
 from django.http  import HttpResponse, JsonResponse
 from django.views import View
 
 from .models         import Cart
 from users.models    import User
-from users.utils     import @login_decorator
+from users.utils     import login_decorator
 from products.models import ProductOption
 
 class CartView(View):
     @login_decorator
     def post(self, request, product_option_id):
+        data = json.loads(request.body)
         try:
-            quantity = 1
+            quantity = data['quantity']
             
             cart, created = Cart.objects.get_or_create(
                     product_option = ProductOption.objects.get(id=product_option_id),
-                    user           = User.objects.get(id=request.user.id),
-                    defaults       = {'quantity':1}
+                    user           = request.user,
+                    defaults       = {'quantity': quantity}
                     )
 
             if not created:
