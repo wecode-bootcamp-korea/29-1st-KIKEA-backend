@@ -11,7 +11,7 @@ class ProductOptionView(View):
             subcategory_name = request.GET.getlist('subcategory', None)
             type_name        = request.GET.getlist('type', None)
             product_name     = request.GET.getlist('product')
-            sorting          = request.GET.get('sort', None)
+            sorting          = request.GET.get('sort', '-created_at')
 
             q = Q()
 
@@ -27,10 +27,7 @@ class ProductOptionView(View):
             if product_name:
                 q &= Q(product__name__in = product_name)
             
-            productoptions = ProductOption.objects.filter(q)
-            
-            if sorting:
-                productoptions = productoptions.order_by(sorting)
+            productoptions = ProductOption.objects.filter(q).order_by(sorting)
 
             result = [{
                 "id"         : productoption.id,
