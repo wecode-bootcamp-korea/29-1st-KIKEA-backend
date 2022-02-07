@@ -3,29 +3,26 @@ from django.views import View
 
 from .models         import Cart
 from users.models    import User
+from users.utils     import @login_decorator
 from products.models import ProductOption
 
 class CartView(View):
+    @login_decorator
     def post(self, request, product_option_id):
         try:
             quantity = 1
-
-            user           = User.objects.get(id=request.user.id)
-            product_option = ProductOption.objects.get(id=product_option_id)
-            cart           = Cart.objects.filter(user=user.id, product_option=product_option.id)
             
-            if cart.exists():
-                quantity += cart[0].quantity
-                cart.update(quantity=quantity)
+            cart, created = Cart.objects.get_or_create(
+                    product_option = ProductOption.objects.get(id=product_option_id),
+                    user           = User.objects.get(id=request.user.id),
+                    defaults       = {'quantity':1}
+                    )
 
+            if not created:
+                cart.quantity += quantity
+                cart.save()
                 return HttpResponse(status=204)
-
-            Cart.objects.create(
-                quantity       = quantity,
-                product_option = product_option,
-                user           = user
-                )
-            
+                
             return HttpResponse(status=201)
         except ProductOption.DoesNotExist:
             return JsonResponse({'message': 'INVALID_PRODUCT_OPTION'}, status=400)
