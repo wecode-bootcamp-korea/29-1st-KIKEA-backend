@@ -4,7 +4,6 @@ from django.http  import HttpResponse, JsonResponse
 from django.views import View
 
 from .models         import Cart
-from users.models    import User
 from users.utils     import login_decorator
 from products.models import ProductOption
 
@@ -29,3 +28,19 @@ class CartView(View):
             return HttpResponse(status=201)
         except ProductOption.DoesNotExist:
             return JsonResponse({'message': 'INVALID_PRODUCT_OPTION'}, status=400)
+
+    def patch(self, request, product_option_id):
+        data = json.loads(request.body)
+
+        user_id  = request.user.id
+        quantity = data['quantity']
+
+        cart = Cart.objects.filter(user=user_id, product_option=product_option_id)
+
+        if quantity == '0':
+            cart.delete()
+            return HttpResponse(status=204)
+
+        cart.update(quantity=quantity)
+
+        return HttpResponse(status=200)
