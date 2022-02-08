@@ -5,7 +5,7 @@ from .models                import *
 
 class TypeView(View):
     def get(self, request):
-        types = Type.objects.filter(subcategory__name__in = request.GET.getlist('subcategory'))
+        types = Type.objects.filter(sub_category__id__in = request.GET.getlist('subcategory'))
 
         results = [{
             "id"        : type.id,
