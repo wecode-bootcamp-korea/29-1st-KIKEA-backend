@@ -1,11 +1,12 @@
 import json
 
-from django.views           import View
-from django.http            import JsonResponse, HttpResponse
+from django.views import View
+from django.http  import JsonResponse, HttpResponse
 
 from users.models import User
-from .models                import *
-from users.utils            import login_decorator
+from users.utils  import login_decorator
+from .models      import *
+
 
 class ReviewView(View):
     @login_decorator
