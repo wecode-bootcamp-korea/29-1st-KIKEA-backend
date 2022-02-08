@@ -9,6 +9,14 @@ from products.models import ProductOption
 
 class CartView(View):
     @login_decorator
+    def delete(self, request, product_option_id):
+        Cart.objects.filter(
+            user           = request.user,
+            product_option = product_option_id
+            ).delete()
+
+        return HttpResponse(status=204)
+        
     def get(self, request):
         carts   = Cart.objects.filter(user=request.user)
 
