@@ -36,7 +36,7 @@ class ProductOptionView(View):
                 "color_id"   : productoption.color_id,
                 "size_id"    : productoption.size_id,
                 "product_id" : productoption.product_id,
-                "image"      : [image_url.image_url for image_url in productoption.productoptionimage_set.all()]
+                "image"      : [product_option_image.image_url for product_option_image in productoption.productoptionimage_set.all()]
             }for productoption in productoptions]
 
             return JsonResponse({'message':'SUCCESS' ,'result' : result}, status=200)
