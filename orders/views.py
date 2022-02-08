@@ -9,7 +9,7 @@ from users.utils import login_decorator
 class CartView(View):
     @login_decorator
     def get(self, request):
-        carts   = Cart.objects.filter(user=1)
+        carts   = Cart.objects.filter(user=request.user)
 
         if not carts.exists():
             return JsonResponse({'message': 'NO_PRODUCT'}, status=200)
