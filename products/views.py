@@ -16,7 +16,7 @@ class ReviewView(View):
             comment     = review_data['comment']
             rating      = review_data['rating']
             product_id  = review_data['product_id']
-            user_id     = review_data['user_id']
+            user_id     = request.user.id
 
             review, is_review = Review.objects.get_or_create(
                 comment    = comment,
