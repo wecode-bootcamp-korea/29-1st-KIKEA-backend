@@ -60,13 +60,12 @@ class CartView(View):
         except ProductOption.DoesNotExist:
             return JsonResponse({'message': 'INVALID_PRODUCT_OPTION'}, status=400)
 
+    @login_decorator
     def patch(self, request, product_option_id):
-        data = json.loads(request.body)
-
-        user_id  = request.user.id
+        data     = json.loads(request.body)
         quantity = data['quantity']
 
-        cart = Cart.objects.filter(user=user_id, product_option=product_option_id)
+        cart = Cart.objects.filter(user=request.user, product_option=product_option_id)
 
         if quantity == '0':
             cart.delete()
