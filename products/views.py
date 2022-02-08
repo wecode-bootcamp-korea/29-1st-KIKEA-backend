@@ -16,16 +16,16 @@ class ProductOptionView(View):
             q = Q()
 
             if category_name:
-                q &= Q(product__type__subcategory__category__name__in = category_name)
+                q &= Q(product__type__subcategory__category__id__in = category_name)
             
             if subcategory_name:
-                q &= Q(product__type__subcategory__name__in = subcategory_name)
+                q &= Q(product__type__subcategory__id__in = subcategory_name)
 
             if type_name:
-                q &= Q(product__type__name__in = type_name)
+                q &= Q(product__type__id__in = type_name)
             
             if product_name:
-                q &= Q(product__name__in = product_name)
+                q &= Q(product__id__in = product_name)
             
             productoptions = ProductOption.objects.filter(q).order_by(sorting)
 
