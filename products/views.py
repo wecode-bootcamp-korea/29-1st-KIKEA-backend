@@ -16,10 +16,10 @@ class ProductOptionView(View):
             q = Q()
 
             if category_name:
-                q &= Q(product__type__subcategory__category__id__in = category_name)
+                q &= Q(product__type__sub_category__category__id__in = category_name)
             
             if subcategory_name:
-                q &= Q(product__type__subcategory__id__in = subcategory_name)
+                q &= Q(product__type__sub_category__id__in = subcategory_name)
 
             if type_name:
                 q &= Q(product__type__id__in = type_name)
