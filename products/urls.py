@@ -4,4 +4,5 @@ from .views      import *
 
 urlpatterns = [
     path("", ProductOptionView.as_view()),
+    path("/category", CategoryView.as_view()),
 ]
