@@ -4,7 +4,6 @@ from django.views           import View
 from django.http            import JsonResponse, HttpResponse
 
 from users.models import User
-
 from .models                import *
 from users.utils            import login_decorator
 
@@ -30,3 +29,19 @@ class ReviewView(View):
         
         except KeyError as e:
             return JsonResponse({"message" : "KEY_ERROR: " + str(e).replace("'", '')}, status = 400)
+
+
+class CategoryView(View):
+    def get(self, request):
+        categories = Category.objects.all()
+
+        results = [{
+            "id"               : category.id,
+            "name"             : category.name,
+            "subcategory_list" : [{
+                "id"           : subcategory.id,
+                "name"         : subcategory.name,                                 
+            } for subcategory in category.subcategory_set.all()]
+        } for category in categories]
+
+        return JsonResponse({"categories" : results}, status = 200)
