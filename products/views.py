@@ -75,8 +75,8 @@ class ProductView(View):
             "default_image" : product.default_image,
             "price"         : product.productoption_set.all()[0].price,
             "type"          : product.type.name,
-            "review_rating" : Review.objects.filter(product = product).aggregate(rating_average = Avg('rating')),
-            "review_count"  : Review.objects.filter(product = product).aggregate(rating_count   = Count('rating'))
+            "review_rating" : product.review_set.aggregate(rating_average = Avg('rating')),
+            "review_count"  : product.review_set.aggregate(rating_count   = Count('rating'))
         } for product in products]
 
         return JsonResponse({"products" : results}, status = 200)
