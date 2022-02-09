@@ -8,7 +8,6 @@ from users.models     import User
 from users.utils      import login_decorator
 from .models          import *
 
-
 class ReviewView(View):
     @login_decorator
     def post(self, request):
