@@ -1,6 +1,6 @@
 from django.views           import View
 from django.http            import JsonResponse, HttpResponse
-from django.db.models       import Q
+from django.db.models       import Q, Avg, Count
 
 from .models                import *
 
@@ -57,3 +57,25 @@ class CategoryView(View):
         } for category in categories]
 
         return JsonResponse({"categories" : results}, status = 200)
+
+class ProductView(View):
+    def get(self, request):
+        type_name = request.GET.getlist('type', None)
+        q = Q()
+
+        if type_name:
+            q &= Q(type__id__in = type_name)
+
+        products = Product.objects.filter(q).prefetch_related('review_set')
+
+        results = [{
+            "id"            : product.id,
+            "name"          : product.name,
+            "default_image" : product.default_image,
+            "price"         : product.productoption_set.all()[0].price,
+            "type"          : product.type.name,
+            "review_rating" : Review.objects.filter(product = product).aggregate(rating_average = Avg('rating')),
+            "review_count"  : Review.objects.filter(product = product).aggregate(rating_count   = Count('rating'))
+        } for product in products]
+
+        return JsonResponse({"products" : results}, status = 200)
