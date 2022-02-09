@@ -102,3 +102,29 @@ class CategoryView(View):
         } for category in categories]
 
         return JsonResponse({"categories" : results}, status = 200)
+
+class ProductView(View):
+    def get(self, request):
+        type_name        = request.GET.getlist('type', None)
+        subcategory_name = request.GET.getlist('subcategory', None)
+        q = Q()
+
+        if type_name:
+            q &= Q(type__id__in = type_name)
+        
+        if subcategory_name:
+            q &= Q(type__sub_category__id__in = subcategory_name)
+
+        products = Product.objects.filter(q).prefetch_related('review_set')
+
+        results = [{
+            "id"            : product.id,
+            "name"          : product.name,
+            "default_image" : product.default_image,
+            "price"         : product.productoption_set.all()[0].price,
+            "type"          : product.type.name,
+            "review_rating" : product.review_set.aggregate(rating_average = Avg('rating')),
+            "review_count"  : product.review_set.aggregate(rating_count   = Count('rating'))
+        } for product in products]
+
+        return JsonResponse({"products" : results}, status = 200)
