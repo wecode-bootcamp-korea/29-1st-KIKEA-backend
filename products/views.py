@@ -102,7 +102,6 @@ class CategoryView(View):
         } for category in categories]
 
         return JsonResponse({"categories" : results}, status = 200)
-<<<<<<< HEAD
 
 class ProductView(View):
     def get(self, request):
@@ -129,5 +128,3 @@ class ProductView(View):
         } for product in products]
 
         return JsonResponse({"products" : results}, status = 200)
-=======
->>>>>>> main
