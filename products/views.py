@@ -1,9 +1,49 @@
-from django.views           import View
-from django.http            import JsonResponse, HttpResponse
-from django.db.models       import Q, Avg, Count
+import json
 
-from .models                import *
+from django.views     import View
+from django.http      import JsonResponse, HttpResponse
+from django.db.models import Q, Avg, Count
 
+from users.models     import User
+from users.utils      import login_decorator
+from .models          import *
+
+
+class ReviewView(View):
+    @login_decorator
+    def post(self, request):
+        try:
+            review_data = json.loads(request.body)
+            comment     = review_data['comment']
+            rating      = review_data['rating']
+            product_id  = review_data['product_id']
+            user_id     = request.user.id
+
+            review, is_review = Review.objects.get_or_create(
+                comment    = comment,
+                rating     = rating,
+                product_id = product_id,
+                user_id    = user_id
+            )
+            if not is_review:
+                return JsonResponse({"message" : "review already exist"}, status = 201)
+            return JsonResponse({"message" : "SUCCESS"}, status = 201)
+        
+        except KeyError as e:
+            return JsonResponse({"message" : "KEY_ERROR: " + str(e).replace("'", '')}, status = 400)
+
+class TypeView(View):
+    def get(self, request):
+        types = Type.objects.filter(sub_category__id__in = request.GET.getlist('subcategory'))
+
+        results = [{
+            "id"        : type.id,
+            "name"      : type.name,
+            "image_url" : type.image_url,
+        } for type in types]
+
+        return JsonResponse({"types" : results}, status = 200)
+        
 class ProductOptionView(View):
     def get(self, request):
         try:
