@@ -61,6 +61,7 @@ class CategoryView(View):
 class ProductView(View):
     def get(self, request):
         type_name = request.GET.getlist('type', None)
+        
         q = Q()
 
         if type_name:
