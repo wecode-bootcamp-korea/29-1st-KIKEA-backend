@@ -11,7 +11,9 @@ from .models import (
     Order,
     OrderStatus,
     OrderItem,
-    ShippingStatus
+    ShippingStatus,
+    OrderStatusEnum,
+    ShipptingStatusEnum
     )
 from users.utils     import login_decorator
 from products.models import ProductOption
@@ -31,10 +33,10 @@ class OrderView(View):
                 )['total']
 
             order_items.update(
-                shipping_status = ShippingStatus.objects.get(name='회수 요청')
+                shipping_status = ShippingStatus.objects.get(id=ShipptingStatusEnum.PREPARING_DELIVERY.value)
                 )
             
-            order_item.order.order_status_id = OrderStatus.objects.get(name='부분 취소')
+            order_item.order.order_status_id = OrderStatus.objects.get(id=OrderStatusEnum.COMPLETE.value)
             order_item.product_option.stock += order_item.quantity
             order_item.user.point           += total_payment
 
