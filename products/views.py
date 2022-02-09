@@ -1,6 +1,6 @@
 from django.views           import View
 from django.http            import JsonResponse, HttpResponse
-from django.db.models       import Q
+from django.db.models       import Q, Avg, Count
 
 from .models                import *
 
@@ -27,16 +27,22 @@ class ProductOptionView(View):
             if product_name:
                 q &= Q(product__id__in = product_name)
             
-            productoptions = ProductOption.objects.filter(q).order_by(sorting)
+            productoptions = ProductOption.objects.filter(q).order_by(sorting).prefetch_related('product__review_set')
 
             result = [{
-                "id"         : productoption.id,
-                "price"      : productoption.price,
-                "stock"      : productoption.stock,
-                "color_id"   : productoption.color_id,
-                "size_id"    : productoption.size_id,
-                "product_id" : productoption.product_id,
-                "image"      : [product_option_image.image_url for product_option_image in productoption.productoptionimage_set.all()]
+                "id"            : productoption.id,
+                "price"         : productoption.price,
+                "stock"         : productoption.stock,
+                "color"         : productoption.color.name if productoption.color else None,
+                "size"          : productoption.size.name if productoption.size else None,
+                "product_id"    : productoption.product_id,
+                "default_image" : productoption.product.default_image,
+                "description"   : productoption.product.description,
+                "type"          : productoption.product.type.name,
+                "name"          : productoption.product.name,
+                "review_rating" : Review.objects.filter(product_id = productoption.product_id).aggregate(rating_average = Avg('rating')),
+                "review_count"  : Review.objects.filter(product_id = productoption.product_id).aggregate(rating_count   = Count('rating')),
+                "image"         : [image_url.image_url for image_url in productoption.productoptionimage_set.all()]
             }for productoption in productoptions]
 
             return JsonResponse({'message':'SUCCESS' ,'result' : result}, status=200)
