@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from django.urls import path
 
 from .views      import *
@@ -6,16 +5,6 @@ from .views      import *
 urlpatterns = [
     path("", ProductOptionView.as_view()),
     path("/category", CategoryView.as_view()),
+    path("/review", ReviewView.as_view()),
     path("/product", ProductView.as_view()),
 ]
-=======
-from django.urls import path
-
-from .views      import *
-
-urlpatterns = [
-    path("", ProductOptionView.as_view()),
-    path("/category", CategoryView.as_view()),
-    path("/review", ReviewView.as_view())
-]
->>>>>>> main
