@@ -13,7 +13,7 @@ class TypeView(View):
             "image_url" : type.image_url,
         } for type in types]
 
-        return JsonResponse({"categories" : results}, status = 200)
+        return JsonResponse({"types" : results}, status = 200)
         
 class CategoryView(View):
     def get(self, request):
