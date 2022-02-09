@@ -32,6 +32,18 @@ class ReviewView(View):
         except KeyError as e:
             return JsonResponse({"message" : "KEY_ERROR: " + str(e).replace("'", '')}, status = 400)
 
+class TypeView(View):
+    def get(self, request):
+        types = Type.objects.filter(sub_category__id__in = request.GET.getlist('subcategory'))
+
+        results = [{
+            "id"        : type.id,
+            "name"      : type.name,
+            "image_url" : type.image_url,
+        } for type in types]
+
+        return JsonResponse({"types" : results}, status = 200)
+        
 class ProductOptionView(View):
     def get(self, request):
         try:
