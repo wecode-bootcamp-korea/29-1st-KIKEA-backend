@@ -60,12 +60,15 @@ class CategoryView(View):
 
 class ProductView(View):
     def get(self, request):
-        type_name = request.GET.getlist('type', None)
-        
+        type_name        = request.GET.getlist('type', None)
+        subcategory_name = request.GET.getlist('subcategory', None)
         q = Q()
 
         if type_name:
             q &= Q(type__id__in = type_name)
+        
+        if subcategory_name:
+            q &= Q(type__sub_category__id__in = subcategory_name)
 
         products = Product.objects.filter(q).prefetch_related('review_set')
 
