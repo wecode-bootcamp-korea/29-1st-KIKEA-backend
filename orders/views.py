@@ -1,4 +1,4 @@
-import json
+import json, uuid
 
 from django.http      import JsonResponse, HttpResponse
 from django.views     import View
@@ -11,8 +11,8 @@ from .models import (
     Order,
     OrderStatus,
     OrderItem,
-    ShippingStatus,
     OrderStatusEnum,
+    ShippingStatus,
     ShipptingStatusEnum
     )
 from users.utils     import login_decorator
@@ -20,6 +20,63 @@ from products.models import ProductOption
 
 class OrderView(View):
     @login_decorator
+    @transaction.atomic
+    def post(self, request):
+        user = request.user
+
+        product_options = ProductOption.objects.filter(cart__user=user)\
+                                               .prefetch_related('cart_set')\
+                                               .annotate(total_quantity=Sum('cart__quantity'))
+
+        sold_out = [
+            {
+                'product_name': product_option.product.name
+            }
+            for product_option in product_options 
+            if product_option.stock - product_option.total_quantity < 0
+        ]
+        
+        if sold_out: 
+            return JsonResponse(
+                    {
+                        'message' : 'OUT_OF_STOCK',
+                        'sold_out': sold_out
+                    }, status=202)
+
+        total_payment = product_options.aggregate(total=Sum(F('cart__quantity') * F('price')))['total']
+
+        if user.point - total_payment < 0:
+            return JsonResponse({'message': 'LACK_OF_POINT'}, status=202)
+
+        for product_option in product_options:
+            product_option.stock -= product_option.total_quantity
+        
+        ProductOption.objects.bulk_update(product_options, ['stock'])
+
+        order = Order.objects.create(
+            order_number    = uuid.uuid4(),
+            user            = user,
+            order_status_id = OrderStatusEnum.COMPLETE.value
+        )
+
+        order_items = [
+            OrderItem(
+                user                = user,
+                product_option      = product_option,
+                order               = order,
+                shipping_status_id  = ShipptingStatusEnum.PREPARING_DELIVERY.value,
+                quantity            = product_option.total_quantity
+            ) for product_option in product_options
+        ]
+        
+        OrderItem.objects.bulk_create(order_items)
+
+        user.point -= total_payment
+        user.save()
+
+        Cart.objects.filter(user=user).delete()
+        return HttpResponse(status=201)
+
     def patch(self, request, order_item_id):
         order_items = OrderItem.objects.filter(id=order_item_id)
         order_item = order_items[0]
