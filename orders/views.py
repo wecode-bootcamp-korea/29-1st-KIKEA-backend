@@ -33,7 +33,7 @@ class OrderView(View):
                 'product_name': product_option.product.name
             }
             for product_option in product_options 
-            if product_option.stock - product_option.cart_set.get(user=user).quantity < 0
+            if product_option.stock - product_option.total_quantity < 0
         ]
         
         if sold_out: 
