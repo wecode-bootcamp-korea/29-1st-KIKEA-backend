@@ -1,3 +1,5 @@
+from enum import Enum
+
 from django.db   import models
 
 from core.models import TimeStampModel
@@ -40,3 +42,18 @@ class Cart(TimeStampModel):
 
     class Meta:
         db_table = 'carts'
+
+class OrderStatusEnum(Enum):
+    PANDING              = 1
+    COMPLETE             = 2
+    CANCELLED            = 3
+    PARTIAL_CANCELLATION = 5
+
+class ShipptingStatusEnum(Enum):
+    PREPARING_DELIVERY = 1
+    IN_TRANSIT         = 2
+    SHIPPING           = 3
+    DELIVERED          = 4
+    RETURN_REQUEST     = 5
+    RETRIEVING         = 6
+    SHIPMENT_RETURNED  = 7

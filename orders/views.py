@@ -1,13 +1,51 @@
 import json
 
-from django.http  import JsonResponse, HttpResponse
-from django.views import View
+from django.http      import JsonResponse, HttpResponse
+from django.views     import View
+from django.db        import transaction
+from django.db.models import F, Sum
+from django.utils     import timezone
 
-from .models         import Order, OrderItem, Cart
+from .models import (
+    Cart,
+    Order,
+    OrderStatus,
+    OrderItem,
+    ShippingStatus,
+    OrderStatusEnum,
+    ShipptingStatusEnum
+    )
 from users.utils     import login_decorator
 from products.models import ProductOption
 
 class OrderView(View):
+    @login_decorator
+    def patch(self, request, order_item_id):
+        order_items = OrderItem.objects.filter(id=order_item_id)
+        order_item = order_items[0]
+        
+        if (timezone.now() - order_item.order.created_at).days > 7:
+            return JsonResponse({'message': 'NOT_AVAILABLE'}, status=400)
+        
+        with transaction.atomic():
+            total_payment = order_items.aggregate(
+                total = Sum(F('quantity') * F('product_option__price'))
+                )['total']
+
+            order_items.update(
+                shipping_status = ShippingStatus.objects.get(id=ShipptingStatusEnum.PREPARING_DELIVERY.value)
+                )
+            
+            order_item.order.order_status_id = OrderStatus.objects.get(id=OrderStatusEnum.COMPLETE.value)
+            order_item.product_option.stock += order_item.quantity
+            order_item.user.point           += total_payment
+
+            order_item.order.save()
+            order_item.product_option.save()
+            order_item.user.save()
+        
+        return HttpResponse(status=200)
+    
     @login_decorator
     def get(self, request):
         orders = Order.objects.filter(user=request.user)
@@ -47,7 +85,8 @@ class CartView(View):
             ).delete()
 
         return HttpResponse(status=204)
-        
+    
+    @login_decorator
     def get(self, request):
         carts   = Cart.objects.filter(user=request.user)
 
